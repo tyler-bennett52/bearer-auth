@@ -14,18 +14,24 @@ const userSchema = (sequelize, DataTypes) => {
       get() {
         return jwt.sign({ username: this.username }, SECRET, { expiresIn: 1000 * 60 * 60 * 24 * 7});
       },
+      set() {
+        return jwt.sign({ username: this.username }, SECRET, {expiresIn: 1000 * 60 * 60 * 24 * 7 });
+      },
     },
   });
 
   model.beforeCreate(async (user) => {
-    let hashedPass = bcrypt.hash(user.password, 5);
+    let hashedPass = await bcrypt.hash(user.password, 5);
+    console.log('hashed', hashedPass);
     user.password = hashedPass;
   });
 
   // Basic AUTH: Validating strings (username, password) 
   model.authenticateBasic = async function (username, password) {
     try {
+      console.log('From authBasic method', username, password);
       const user = await this.findOne({where: { username }});
+      console.log(user);
       const valid = await bcrypt.compare(password, user.password);
       if (valid) { return user; }
     } catch (error) {

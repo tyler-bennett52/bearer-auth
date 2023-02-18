@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
         next();
       }
     } else {
-      next('Need a token dummy');
+      throw new Error();
     }
 
 
