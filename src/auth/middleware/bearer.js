@@ -9,14 +9,20 @@ module.exports = async (req, res, next) => {
   }
   try {
     let authType = req.headers.authorization.split(' ')[0];
-    const token = req.headers.authorization.split(' ').pop();
-    const validUser = await userModel.authenticateWithToken(token);
+    if (authType === 'Bearer') {
+      const token = req.headers.authorization.split(' ')[1];
+      console.log('token from bearer.js:', token);
+      const validUser = await userModel.authenticateToken(token);
 
-    if (validUser) {    
-      req.user = validUser;
-      req.token = validUser.token;
-      next();
+      if (validUser) {    
+        req.user = validUser;
+        req.token = validUser.token;
+        next();
+      }
+    } else {
+      next('Need a token dummy');
     }
+
 
 
   } catch (e) {
