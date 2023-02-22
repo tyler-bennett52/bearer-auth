@@ -1,21 +1,32 @@
 'use strict';
 
-const { users } = require('../models/index.js');
+const { userModel } = require('../models/index.js');
 
 module.exports = async (req, res, next) => {
-
+ 
+  if (!req.headers.authorization) { 
+    next('No token fail');
+  }
   try {
+    let authType = req.headers.authorization.split(' ')[0];
+    if (authType === 'Bearer') {
+      const token = req.headers.authorization.split(' ')[1];
+      console.log('token from bearer.js:', token);
+      const validUser = await userModel.authenticateToken(token);
 
-    if (!req.headers.authorization) { next('Invalid Login') }
+      if (validUser) {    
+        req.user = validUser;
+        req.token = validUser.token;
+        next();
+      }
+    } else {
+      throw new Error();
+    }
 
-    const token = req.headers.authorization.split(' ').pop();
-    const validUser = await users.authenticateWithToken(token);
 
-    req.user = validUser;
-    req.token = validUser.token;
 
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     res.status(403).send('Invalid Login');
   }
-}
+};

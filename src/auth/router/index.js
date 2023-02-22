@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const authRouter = express.Router();
+const authRoutes = express.Router();
 
 const basicAuth = require('../middleware/basic.js');
 const bearerAuth = require('../middleware/bearer.js');
@@ -9,12 +9,12 @@ const {
   handleSignin,
   handleSignup,
   handleGetUsers,
-  handleSecret
+  handleSecret,
 } = require('./handlers.js');
 
-authRouter.post('/signup', handleSignup);
-authRouter.post('/signin', basicAuth, handleSignin);
-authRouter.get('/users', bearerAuth, handleGetUsers);
-authRouter.get('/secret', bearerAuth, handleSecret);
+authRoutes.post('/signup', handleSignup);
+authRoutes.post('/signin', basicAuth, handleSignin);
+authRoutes.get('/users', bearerAuth, handleGetUsers);
+authRoutes.get('/secret', bearerAuth, handleSecret);
 
-module.exports = authRouter;
+module.exports = authRoutes;
